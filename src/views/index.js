@@ -18,22 +18,22 @@ const AllRoutes = props => {
 
 	return (
 		<Routes>
-			<Route path="/" element={<ProtectedRoute />}>
+			{/* <Route path="/" element={<ProtectedRoute />}>
 				<Route path="/" element={<Navigate replace to={authenticatedEntryPath} />} />
 				{protectedRoutes.map((route, index) => (
-					<Route 
-						key={route.key + index} 
+					<Route
+						key={route.key + index}
 						path={route.path}
 						element={
-							<AuthorityGuard 
+							<AuthorityGuard
 								userAuthority={userAuthority}
 								authority={route.authority}
 							>
 								<PageContainer {...props} {...route.meta}>
 									<AppRoute
-										routeKey={route.key} 
+										routeKey={route.key}
 										component={route.component}
-										{...route.meta} 
+										{...route.meta}
 									/>
 								</PageContainer>
 							</AuthorityGuard>
@@ -41,31 +41,31 @@ const AllRoutes = props => {
 					/>
 				))}
 				<Route path="*" element={<Navigate to="/" replace />} />
-			</Route>
+			</Route> */}
 			<Route path="/" element={<PublicRoute />}>
 				{publicRoutes.map(route => (
-					<Route 
-						key={route.path} 
+					<Route
+						key={route.path}
 						path={route.path}
 						element={
 							<AppRoute
-								routeKey={route.key} 
+								routeKey={route.key}
 								component={route.component}
-								{...route.meta} 
+								{...route.meta}
 							/>
 						}
-					/ >
+					/>
 				))}
 			</Route>
 		</Routes>
 	)
 
-} 
+}
 
 const Views = props => {
 	return (
 		<Suspense fallback={<Loading loading={true} />}>
-			<AllRoutes {...props}/>
+			<AllRoutes {...props} />
 		</Suspense>
 	)
 }
