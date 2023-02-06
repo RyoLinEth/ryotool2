@@ -5,11 +5,11 @@ export const defaultConfig = {
     themeColor: 'indigo',
     direction: 'ltr',
     mode: 'light',
-    locale: 'en',
+    locale: 'CN',
     primaryColorLevel: 600,
     cardBordered: false,
     controlSize: SIZES.MD,
-    navMode: 'light'
+    navMode: 'light',
 }
 
 export const ConfigContext = createContext(defaultConfig)

@@ -11,6 +11,8 @@ import {
 } from 'constants/navigation.constant'
 import useMenuActive from 'utils/hooks/useMenuActive'
 import { useTranslation } from 'react-i18next'
+import useLocale from 'utils/hooks/useLocale'
+// let language = useLocale();
 
 const { MenuGroup } = Menu
 
@@ -25,6 +27,8 @@ const VerticalMenuContent = props => {
 		onMenuItemClick,
 		direction = themeConfig.direction
 	} = props
+
+	let language = useLocale();
 
 	const { t } = useTranslation()
 
@@ -48,7 +52,7 @@ const VerticalMenuContent = props => {
 		if(nav.subMenu.length === 0 && nav.type === NAV_ITEM_TYPE_ITEM) {
 			return (
 				<VerticalSingleMenuItem 
-					key={nav.key} 
+					key={nav.key}
 					nav={nav} 
 					onLinkClick={handleLinkClick} 
 					sideCollapsed={collapsed}
@@ -72,10 +76,12 @@ const VerticalMenuContent = props => {
 		}
 
 		if(nav.type === NAV_ITEM_TYPE_TITLE) {
-
 			if (nav.subMenu.length > 0) {
 				return (
-					<MenuGroup key={nav.key} label={t(nav.translateKey) || nav.title }>
+					<MenuGroup key={nav.key} label={
+						// t(nav.translateKey) || nav.title 
+						language === "CN" ? nav.title: nav.translateKey
+						}>
 						{
 							nav.subMenu.map(subNav => (
 								subNav.subMenu.length > 0 

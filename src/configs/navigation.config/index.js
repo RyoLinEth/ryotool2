@@ -9,7 +9,7 @@ const navigationConfig = [
         key: '首頁',
 		path: '/home',
 		title: '首頁',
-		translateKey: 'nav.首頁',
+		translateKey: 'Home',
 		icon: 'home',
 		type: NAV_ITEM_TYPE_ITEM,
 		authority: [],
@@ -30,8 +30,28 @@ const navigationConfig = [
         key: '批量工具',
 		path: '/single-menu-view2',
 		title: '批量工具',
-		translateKey: 'nav.批量工具',
-		icon: 'singleMenu',
+		translateKey: 'Batch Tool',
+		icon: 'batch',
+		type: NAV_ITEM_TYPE_ITEM,
+		authority: [],
+        subMenu: []
+    },
+    {
+        key: '一鍵發幣',
+		path: '/create',
+		title: '一鍵發幣',
+		translateKey: 'Token Creator',
+		icon: 'tokenCreate',
+		type: NAV_ITEM_TYPE_ITEM,
+		authority: [],
+        subMenu: []
+    },
+    {
+        key: '代幣控制台',
+		path: '/controlpanel',
+		title: '代幣控制台',
+		translateKey: 'Token Control Panel',
+		icon: 'tokenControl',
 		type: NAV_ITEM_TYPE_ITEM,
 		authority: [],
         subMenu: []
@@ -68,10 +88,10 @@ const navigationConfig = [
     //     ]
     // },
     {
-        key: 'collapseMenu2',
+        key: '下拉式選單2',
 		path: '',
 		title: '批量工具',
-		translateKey: 'nav.collapseMenu2.批量工具',
+		translateKey: '批量工具',
 		icon: 'collapseMenu',
 		type: NAV_ITEM_TYPE_COLLAPSE,
 		authority: [],
@@ -101,8 +121,8 @@ const navigationConfig = [
     {
 		key: 'groupMenu',
 		path: '',
-		title: 'Group Menu',
-		translateKey: 'nav.groupMenu.groupMenu',
+		title: '群目錄',
+		translateKey: 'Group Menu',
 		icon: '',
 		type: NAV_ITEM_TYPE_TITLE,
 		authority: [],

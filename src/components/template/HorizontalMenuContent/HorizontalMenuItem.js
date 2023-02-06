@@ -1,16 +1,25 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import navigationIcon from 'configs/navigation-icon.config'
 import { MenuItem } from 'components/ui'
 import HorizontalMenuNavLink from './HorizontalMenuNavLink'
 import { useTranslation } from 'react-i18next'
+import useLocale from 'utils/hooks/useLocale'
 
 const HorizontalMenuItem = ({nav, isLink, manuVariant}) => {
 
 	const { title, translateKey, icon, path } = nav
 
-	const { t } = useTranslation()
+	const [itemTitle, setItemTitle] = useState(title)
 
-	const itemTitle = t(translateKey, title)
+	let language = useLocale();
+
+	useEffect(() => {
+		if (language === "CN")
+			setItemTitle(title)
+		else
+			setItemTitle(translateKey)
+	}, [language])
+
 	
 	return (
 		<MenuItem variant={manuVariant}>

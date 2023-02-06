@@ -19,10 +19,38 @@ export const protectedRoutes = [
     //     component: React.lazy(() => import('views/demo/SingleMenuView')),
     //     authority: [],
     // },
+
+    /*  
+    ======================
+    ======================
+        批量功能頁面    
+    ======================
+    ======================
+    */
     {
         key: 'singleMenuItem2',
         path: '/single-menu-view2',
         component: React.lazy(() => import('views/demo/SingleMenuView2')),
+        authority: [],
+    },
+    /*  
+    ======================
+    ======================
+        批量功能頁面    
+    ======================
+    ======================
+    */
+   
+    {
+        key: 'create',
+        path: '/create',
+        component: React.lazy(() => import('views/demo/Create')),
+        authority: [],
+    },
+    {
+        key: 'controlpanel',
+        path: '/controlpanel',
+        component: React.lazy(() => import('views/demo/ControlPanel')),
         authority: [],
     },
     // {
@@ -65,6 +93,12 @@ export const protectedRoutes = [
         key: 'groupMenu.collapse.item2',
         path: '/group-collapse-menu-item-view-2',
         component: React.lazy(() => import('views/demo/GroupCollapseMenuItemView2')),
+        authority: [],
+    },
+    {
+        key: 'transferEther',
+        path: '/transferether',
+        component: React.lazy(() => import('views/demo/TransferEther')),
         authority: [],
     },
 ]

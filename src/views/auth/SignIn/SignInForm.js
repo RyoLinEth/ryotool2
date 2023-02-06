@@ -13,7 +13,6 @@ const validationSchema = Yup.object().shape({
 })
 
 const SignInForm = props => {
-	console.log(props)
 	const { 
 		disableSubmit = false, 
 		className, 

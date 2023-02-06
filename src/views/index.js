@@ -15,10 +15,9 @@ const { authenticatedEntryPath } = appConfig
 const AllRoutes = props => {
 
 	const userAuthority = useSelector((state) => state.auth.user.authority)
-
 	return (
 		<Routes>
-			{/* <Route path="/" element={<ProtectedRoute />}>
+			<Route path="/" element={<ProtectedRoute />}>
 				<Route path="/" element={<Navigate replace to={authenticatedEntryPath} />} />
 				{protectedRoutes.map((route, index) => (
 					<Route
@@ -41,7 +40,7 @@ const AllRoutes = props => {
 					/>
 				))}
 				<Route path="*" element={<Navigate to="/" replace />} />
-			</Route> */}
+			</Route>
 			<Route path="/" element={<PublicRoute />}>
 				{publicRoutes.map(route => (
 					<Route

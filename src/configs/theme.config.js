@@ -9,7 +9,7 @@ export const themeConfig = {
     themeColor: 'indigo',
     direction: THEME_ENUM.DIR_LTR,
     mode: THEME_ENUM.MODE_LIGHT,
-    locale: 'en',
+    locale: 'CN',
     primaryColorLevel: 600,
     cardBordered: true,
     panelExpand: false,
@@ -19,4 +19,5 @@ export const themeConfig = {
         type: THEME_ENUM.LAYOUT_TYPE_MODERN,
         sideNavCollapse: false,
     },
+    defaultAccount: ""
 }

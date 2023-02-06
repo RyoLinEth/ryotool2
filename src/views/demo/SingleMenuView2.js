@@ -1,9 +1,11 @@
 import React from 'react'
-
+import Body from './Body'
 /** Example purpose only */
 const SingleMenuView = () => {
 	return (
-		<div>批量工具</div>
+		<div>
+			<Body />
+		</div>
 	)
 }
 

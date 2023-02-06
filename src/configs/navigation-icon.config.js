@@ -1,10 +1,13 @@
 import React from 'react'
 import {
-    HiOutlineColorSwatch, 
-	HiOutlineDesktopComputer,
+    HiOutlineColorSwatch,
+    HiOutlineDesktopComputer,
     HiOutlineTemplate,
     HiOutlineViewGridAdd,
-    HiOutlineHome
+    HiOutlineHome,
+    HiCurrencyDollar,
+    HiOutlineArrowsExpand,
+    HiDesktopComputer,
 } from 'react-icons/hi'
 
 const navigationIcon = {
@@ -12,7 +15,10 @@ const navigationIcon = {
     singleMenu: <HiOutlineViewGridAdd />,
     collapseMenu: <HiOutlineTemplate />,
     groupSingleMenu: <HiOutlineDesktopComputer />,
-    groupCollapseMenu: <HiOutlineColorSwatch />
+    groupCollapseMenu: <HiOutlineColorSwatch />,
+    tokenCreate: <HiCurrencyDollar />,
+    batch: <HiOutlineArrowsExpand />,
+    tokenControl: <HiDesktopComputer />,
 }
 
 export default navigationIcon

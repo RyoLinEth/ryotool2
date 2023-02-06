@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { themeConfig } from 'configs/theme.config'
-import { 
+import {
 	LAYOUT_TYPE_MODERN,
 	LAYOUT_TYPE_CLASSIC,
 	LAYOUT_TYPE_STACKED_SIDE,
-	NAV_MODE_TRANSPARENT, 
+	NAV_MODE_TRANSPARENT,
 	NAV_MODE_LIGHT,
 	NAV_MODE_DARK,
 	NAV_MODE_THEMED,
@@ -24,18 +24,19 @@ const initialNavMode = () => {
 
 const initialState = {
 	themeColor: themeConfig.themeColor,
-    direction: themeConfig.direction,
-    mode: themeConfig.mode,
-    locale: themeConfig.locale,
-    primaryColorLevel: themeConfig.primaryColorLevel,
-    panelExpand: themeConfig.panelExpand,
-    navMode: initialNavMode(),
-    layout: themeConfig.layout
+	direction: themeConfig.direction,
+	mode: themeConfig.mode,
+	locale: themeConfig.locale,
+	primaryColorLevel: themeConfig.primaryColorLevel,
+	panelExpand: themeConfig.panelExpand,
+	navMode: initialNavMode(),
+	layout: themeConfig.layout,
+	defaultAccount:  themeConfig.defaultAccount
 }
 
 const availableNavColorLayouts = [
-	LAYOUT_TYPE_CLASSIC, 
-	LAYOUT_TYPE_STACKED_SIDE, 
+	LAYOUT_TYPE_CLASSIC,
+	LAYOUT_TYPE_STACKED_SIDE,
 	LAYOUT_TYPE_DECKED
 ]
 
@@ -50,7 +51,7 @@ export const themeSlice = createSlice({
 
 			const availableColorNav = availableNavColorLayouts.includes(state.layout.type)
 
-			if (availableColorNav && action.payload === MODE_DARK  && state.navMode !== NAV_MODE_THEMED) {
+			if (availableColorNav && action.payload === MODE_DARK && state.navMode !== NAV_MODE_THEMED) {
 				state.navMode = NAV_MODE_DARK
 			}
 			if (availableColorNav && action.payload === MODE_LIGHT && state.navMode !== NAV_MODE_THEMED) {
@@ -78,8 +79,8 @@ export const themeSlice = createSlice({
 			}
 
 			state.layout = {
-				...state.layout, 
-				...{type: action.payload}
+				...state.layout,
+				...{ type: action.payload }
 			}
 		},
 		setPreviousLayout: (state, action) => {
@@ -87,9 +88,9 @@ export const themeSlice = createSlice({
 		},
 		setSideNavCollapse: (state, action) => {
 			state.layout = {
-				...state.layout, 
-				...{sideNavCollapse: action.payload}
-			} 
+				...state.layout,
+				...{ sideNavCollapse: action.payload }
+			}
 		},
 		setNavMode: (state, action) => {
 			if (action.payload !== 'default') {
@@ -101,11 +102,11 @@ export const themeSlice = createSlice({
 
 				const availableColorNav = availableNavColorLayouts.includes(state.layout.type)
 
-				if (availableColorNav && state.mode === MODE_LIGHT ) {
+				if (availableColorNav && state.mode === MODE_LIGHT) {
 					state.navMode = NAV_MODE_LIGHT
 				}
 
-				if (availableColorNav && state.mode === MODE_DARK ) {
+				if (availableColorNav && state.mode === MODE_DARK) {
 					state.navMode = NAV_MODE_DARK
 				}
 			}
@@ -119,20 +120,24 @@ export const themeSlice = createSlice({
 		setThemeColorLevel: (state, action) => {
 			state.primaryColorLevel = action.payload
 		},
+		setPublicAddress: (state, action) => {
+			state.defaultAccount = action.payload
+		},
 	},
 })
 
-export const { 
-	setDirection, 
-	setMode, 
-	setLang, 
+export const {
+	setDirection,
+	setMode,
+	setLang,
 	setLayout,
 	setSideNavCollapse,
 	setNavMode,
 	setPanelExpand,
 	setThemeColor,
 	setThemeColorLevel,
-	setPreviousLayout
+	setPreviousLayout,
+	setPublicAddress,
 } = themeSlice.actions
 
 export default themeSlice.reducer

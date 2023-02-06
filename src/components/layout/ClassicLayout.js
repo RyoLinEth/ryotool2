@@ -31,13 +31,13 @@ const ClassicLayout = props => {
 			<div className="flex flex-auto min-w-0">
 				<SideNav />
 				<div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
-					<Header 
+					<Header
 						className="shadow dark:shadow-2xl"
 						headerStart={<HeaderActionsStart />}
-						headerEnd={<HeaderActionsEnd />} 
+						headerEnd={<HeaderActionsEnd />}
 					/>
 					<div className="h-full flex flex-auto flex-col">
-						<View {...props}/>
+						<View {...props} />
 					</div>
 				</div>
 			</div>

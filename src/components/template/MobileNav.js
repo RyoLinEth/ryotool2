@@ -11,12 +11,14 @@ import { NavToggle } from 'components/shared'
 import navigationConfig from 'configs/navigation.config'
 import useResponsive from 'utils/hooks/useResponsive'
 import { useSelector } from 'react-redux'
+import useLocale from 'utils/hooks/useLocale'
 
 const VerticalMenuContent = lazy(() => import('components/template/VerticalMenuContent'))
 
 const MobileNavToggle = withHeaderItem(NavToggle)
 
 const MobileNav = () => {
+	let language = useLocale();
 
 	const [isOpen, setIsOpen] = useState(false)
 
@@ -59,7 +61,7 @@ const MobileNav = () => {
 						<MobileNavToggle toggled={isOpen} />
 					</div>
 					<Drawer
-						title="Navigation"
+						title={language==="CN" ? "導覽列" :"Navigation"}
 						isOpen={isOpen}
 						onClose={onDrawerClose}
 						onRequestClose={onDrawerClose}

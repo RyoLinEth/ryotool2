@@ -1,23 +1,31 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dropdown } from 'components/ui'
 import HorizontalMenuNavLink from './HorizontalMenuNavLink'
 import { useTranslation } from 'react-i18next'
+import useLocale from 'utils/hooks/useLocale'
 
-const HorizontalMenuDropdownItem = ({nav}) => {
+const HorizontalMenuDropdownItem = ({ nav }) => {
 	const { title, translateKey, path, key } = nav
 
-	const { t } = useTranslation()
+	const [itemTitle, setItemTitle] = useState(title)
 
-	const itemTitle = t(translateKey, title)
+	let language = useLocale();
+
+	useEffect(() => {
+		if (language === "CN")
+			setItemTitle(title)
+		else
+			setItemTitle(translateKey)
+	}, [language])
 
 	return (
-		<Dropdown.Item eventKey={key} > 
-			{path 
-				? 
+		<Dropdown.Item eventKey={key} >
+			{path
+				?
 				<HorizontalMenuNavLink path={path}>
 					{itemTitle}
 				</HorizontalMenuNavLink>
-				: 
+				:
 				<span>{itemTitle}</span>
 			}
 		</Dropdown.Item>

@@ -1,0 +1,50 @@
+.toolwrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.toolrow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.toolCell {
+    display: flex;
+    /* flex: 1; */
+    justify-content: center;
+    align-items: center;
+    width: 33.33%;
+    min-width: 300px;
+}
+
+.toolCard {
+    border: 1px solid gray;
+    border-radius: 10px;
+    width: 90vw;
+    max-width: 250px;
+    height: 200px;
+    padding: 10px;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.toolCardTitle {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.linkButton {
+    border-radius: 20px;
+    border: 1px solid white;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+    width: 120px;
+    height: 40px;
+}

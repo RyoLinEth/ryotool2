@@ -7,7 +7,6 @@ export default function authFakeApi (server, apiPrefix) {
     server.post(`${apiPrefix}/sign-in`, (schema, {requestBody}) => {
         const { userName, password } = JSON.parse(requestBody)
         const user = schema.db.signInUserData.findBy({ accountUserName: userName, password })
-        console.log('user', user)
         if (user) {
             const { avatar, userName, email, authority } = user
             return {
