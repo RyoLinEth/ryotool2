@@ -72,7 +72,7 @@
     "build": "run-s build:css react-scripts:build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:css": "cross-env TAILWIND_MODE=build NODE_ENV=production postcss src/assets/styles/app.css -o src/index.css",
+    "build:css": "cross-env TAILWIND_MODE=build NODE_ENV=production node -r esm postcss src/assets/styles/app.css -o src/index.css",
     "watch:css": "cross-env TAILWIND_MODE=watch NODE_ENV=development postcss src/assets/styles/app.css -o src/index.css --watch",
     "react-scripts:start": "react-scripts start",
     "react-scripts:build": "react-scripts build",
@@ -108,7 +108,6 @@
     "postcss-import": "^14.0.2",
     "postcss-nested": "^5.0.6",
     "postcss-preset-env": "7.x",
-    "tailwindcss": "^3.0.7",
-    "build:css": "cross-env TAILWIND_MODE=build NODE_ENV=production node -r esm postcss src/assets/styles/app.css -o src/index.css"
+    "tailwindcss": "^3.0.7"
   }
 }
