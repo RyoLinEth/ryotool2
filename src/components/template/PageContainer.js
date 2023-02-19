@@ -62,7 +62,7 @@ const PageContainer = props => {
 					}
 				</div>
 			</main>
-			{footer && <Footer pageContainerType={pageContainerType} />}
+			{/* {footer && <Footer pageContainerType={pageContainerType} />} */}
 		</div>
 	)
 }

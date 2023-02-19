@@ -1,7 +1,13 @@
 [
 	{
-		"inputs": [],
-		"name": "deploy",
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "take",
+				"type": "bool"
+			}
+		],
+		"name": "changeTakeFee",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -17,24 +23,87 @@
 			{
 				"indexed": false,
 				"internalType": "address",
-				"name": "addr",
+				"name": "contractAddress",
 				"type": "address"
 			}
 		],
-		"name": "Deploy",
+		"name": "ContractDeployed",
 		"type": "event"
 	},
 	{
 		"inputs": [
 			{
+				"internalType": "uint8",
+				"name": "moduleNumber",
+				"type": "uint8"
+			},
+			{
+				"internalType": "bytes",
+				"name": "bytecode",
+				"type": "bytes"
+			},
+			{
+				"internalType": "address[]",
+				"name": "addresses",
+				"type": "address[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "strings",
+				"type": "string[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "BuyFees",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "SellFees",
+				"type": "uint256[]"
+			},
+			{
 				"internalType": "uint256",
-				"name": "_salt",
+				"name": "Supply",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint8",
+				"name": "Decimals",
+				"type": "uint8"
 			}
 		],
-		"name": "deployWithSalt",
+		"name": "deployContract",
 		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes",
+				"name": "bytecode",
+				"type": "bytes"
+			},
+			{
+				"internalType": "string[]",
+				"name": "strings",
+				"type": "string[]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "Supply",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint8",
+				"name": "Decimals",
+				"type": "uint8"
+			}
+		],
+		"name": "deployNormalContract",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -64,22 +133,17 @@
 	{
 		"inputs": [
 			{
-				"internalType": "bytes",
-				"name": "bytecode",
-				"type": "bytes"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_salt",
-				"type": "uint256"
-			}
-		],
-		"name": "getAddress",
-		"outputs": [
-			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"name": "contractModuleNumber",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -88,36 +152,36 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_owner",
-				"type": "address"
+				"internalType": "uint8",
+				"name": "",
+				"type": "uint8"
 			}
 		],
-		"name": "getBytecode",
+		"name": "moduleFee",
 		"outputs": [
 			{
-				"internalType": "bytes",
+				"internalType": "uint256",
 				"name": "",
-				"type": "bytes"
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "pure",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "platformDeployedCA",
+		"outputs": [
+			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
-			}
-		],
-		"name": "isDeployedByPlatfrom",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -125,12 +189,12 @@
 	},
 	{
 		"inputs": [],
-		"name": "random",
+		"name": "takeFee",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "bool",
 				"name": "",
-				"type": "uint256"
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",

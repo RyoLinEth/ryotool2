@@ -19,5 +19,6 @@ export const themeConfig = {
         type: THEME_ENUM.LAYOUT_TYPE_MODERN,
         sideNavCollapse: false,
     },
-    defaultAccount: ""
+    defaultAccount: "",
+    chainID: "",
 }

@@ -5,8 +5,9 @@ import swal from 'sweetalert';
 import { Dropdown } from 'components/ui'
 import DropdownItem from 'components/ui/Dropdown/DropdownItem';
 import { useSelector } from 'react-redux'
-import contractABI from './abi/contractABI.json'
+// import contractABI from './abi/contractABI.js'
 import { ethers } from 'ethers'
+import { text } from 'd3-fetch';
 
 const defaultRouter = "0x10ED43C718714eb63d5aA57B78B54704E256024E";
 const contractAddress = "0xa06058A579165F14e3027643Cf2C7040b5Aaf340";
@@ -16,203 +17,169 @@ const ControlPanel = () => {
     let language = useLocale();
     const account = useSelector(state => state.theme.defaultAccount);
 
-    const moduleTypes =
-        [
-            {
-                MODULE: language !== "CN" ? "Normal Token" : "普通代幣",
-            },
-            {
-                MODULE: language !== "CN" ? "Marketing && LP Token" : "營銷回流代幣",
-            },
-            {
-                MODULE: language !== "CN" ? "Reward Token" : "分紅代幣",
-            },
-        ]
-
-    const [name, setName] = useState('');
-    const [symbol, setSymbol] = useState('');
-    const [decimal, setDecimal] = useState('');
-    const [totalSupply, setTotalSupply] = useState('');
-    const [routerAddress, setRouterAddress] = useState(defaultRouter);
-
-    const [provider, setProvider] = useState(null)
-    const [signer, setSigner] = useState(null)
-    const [contract, setContract] = useState(null)
-
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedValue, setSelectedValue] = useState(moduleTypes[0].MODULE);
-
-    const updateEthers = async () => {
-        let tempProvider = new ethers.providers.Web3Provider(window.ethereum);
-        setProvider(tempProvider);
-
-        let tempSigner = tempProvider.getSigner();
-        setSigner(tempSigner);
-
-        let tempContract = new ethers.Contract(contractAddress, contractABI, tempSigner)
-        setContract(tempContract);
-
-        let contractsMade = await tempContract.addressDeployedContract(account,0);
-        console.log(contractsMade);
-    }
-
-    useEffect(() => {
-        if (account !== null)
-            updateEthers()
-    }, [account])
-
-    const styles = {
-        height: '80px',
-        width: '100%',
-        paddingRight: '5vw',
-        paddingLeft: '5vw',
-    }
-
-    const styles2 = {
-        border: '1px solid black',
-        width: '90%',
-        height: '30px',
-        padding: '5px 10px',
-        marginTop: '5px',
-        borderRadius: '5px',
-    }
-
-    const ErrorChinese = (text, value) => {
-        if (value === '') value = "空"
-        swal("錯誤", `${text} 的值 不可為 ${value}`, "error")
-    }
-    const ErrorEnglish = (text, value) => {
-        if (value === '') value = "null"
-        swal("錯誤", `The value of ${text} : ${value} is invalid`, "error")
-    }
-
-    const submitValue = (e) => {
-        e.preventDefault();
-        if (name === '') {
-            if (language !== "CN") {
-                ErrorEnglish("Token Name", name)
-                return;
-            }
-            ErrorChinese("代幣名稱", name)
-            return;
-        }
-        if (symbol === '') {
-            if (language !== "CN") {
-                ErrorEnglish("Token Symbol", symbol)
-                return;
-            }
-            ErrorChinese("代幣縮寫", symbol)
-            return;
-        }
-        if (decimal === '' || decimal < 0 || decimal > 18) {
-            if (language !== "CN") {
-                ErrorEnglish("Token Decimal", decimal)
-                return;
-            }
-            ErrorChinese("代幣精度", decimal)
-            return;
-        }
-        if (totalSupply === '' || totalSupply < 0 || totalSupply.toString().includes(".")) {
-            if (language !== "CN") {
-                ErrorEnglish("Token Supply", totalSupply)
-                return;
-            }
-            ErrorChinese("代幣供應量", totalSupply)
-            return;
-        }
-
-        console.log(`
-        ==== Values ====
-        Name : ${name}
-        Symbol : ${symbol}
-        Decimal : ${decimal}
-        Total Supply : ${totalSupply}
-        `)
-    }
-
-    const deploy = async () => {
-        try {
-            let result = await contract.deploy()
-            let result2 = await provider.getTransaction(result.hash)
-            console.log(result2)
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
     const texts = {
-        title: language !== "CN" ? "Control Panel" : "代幣控制台",
-        module: language !== "CN" ? "Token Type" : "請選擇合約模板",
-        description: language !== "CN" ? "Token Description" : "代幣說明",
+        title: language === "CN" ? "控制台" : "Control Panel",
+        giveUpAlert: language === "CN" ? "注意：當所有權放棄後，無法再使用任何開關" : "Note: After you renounce the ownership, you'll never ever be able to control the contract"
     }
 
-    const datas = [
+    const controlBoxStyle1 = {
+        display: 'flex',
+        height: '40px',
+        width: '45%',
+        border: '1px solid black',
+        borderRadius: '20px',
+        color: 'black',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '15px',
+    }
+    const controlBoxStyle2 = {
+        display: 'flex',
+        height: '40px',
+        width: '80%',
+        border: '0.5px solid gray',
+        borderRadius: '5px',
+        color: 'black',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '15px',
+        textAlign: 'center',
+        marginBottom: '15px',
+    }
+
+    const controlWrapperStyle = {
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100px',
+        width: '45%',
+        minWidth: '300px',
+        // border: '1px solid black',
+        marginTop: '30px',
+        borderRadius: '10px'
+    }
+
+    const titleStyle = {
+        color: 'red',
+        display: 'flex',
+        textAlign: 'left',
+        paddingLeft: '10px',
+        top: '10px',
+        left: '20px',
+        fontSize: '30px',
+        fontWeight: 'bold',
+    }
+    const controls = [
         {
-            title: language !== "CN" ? "Token Name" : "代幣名稱",
-            value: name,
-            textType: "text",
-            function: e => setName(e.target.value),
-            style: styles2,
-            placeholder: "Ethereum",
+            title: language === "CN" ? "交易控制" : "Transaction",
+            titleStyle: titleStyle,
+            style: controlWrapperStyle,
+            content:
+                [
+                    {
+                        title: language === "CN" ? "開盤" : "Start Trading",
+                        style: controlBoxStyle2,
+                    },
+                ]
         },
         {
-            title: language !== "CN" ? "Token Symbol" : "代幣縮寫",
-            value: symbol,
-            textType: "text",
-            function: e => setSymbol(e.target.value),
-            style: styles2,
-            placeholder: "Eth",
+            title: language === "CN" ? "數量控制" : "Amount",
+            titleStyle: titleStyle,
+            style: controlWrapperStyle,
+            content:
+                [
+                    {
+                        title: language === "CN" ? "單筆限購" : "Set Max Tx Amount",
+                        style: controlBoxStyle2,
+                    },
+                    {
+                        title: language === "CN" ? "錢包限購" : "Set Max Wallet Amount",
+                        style: controlBoxStyle2,
+                    },
+                ]
         },
         {
-            title: language !== "CN" ? "Token Decimal" : "代幣精度",
-            value: decimal,
-            textType: "number",
-            function: e => setDecimal(e.target.value),
-            style: styles2,
-            placeholder: "18",
+            title: language === "CN" ? "稅率" : "Taxes",
+            titleStyle: titleStyle,
+            style: controlWrapperStyle,
+            content:
+                [
+                    {
+                        title: language === "CN" ? "設置購買營銷稅率" : "Set Buy Marketing Fee",
+                        style: controlBoxStyle2,
+                    },
+                    {
+                        title: language === "CN" ? "設置購買回流稅率" : "Set Buy Liquidity Fee",
+                        style: controlBoxStyle2,
+                    },
+                    {
+                        title: language === "CN" ? "設置賣出營銷稅率" : "Set Sell Marketing Fee",
+                        style: controlBoxStyle2,
+                    },
+                    {
+                        title: language === "CN" ? "設置賣出回流稅率" : "Set Sell Liquidity Fee",
+                        style: controlBoxStyle2,
+                    },
+                ]
         },
         {
-            title: language !== "CN" ? "Token Supply" : "代幣供應量",
-            value: totalSupply,
-            textType: "number",
-            function: e => setTotalSupply(e.target.value),
-            style: styles2,
-            placeholder: "1000000",
+            title: language === "CN" ? "錢包地址" : "Wallets",
+            titleStyle: titleStyle,
+            // alert: language === "CN" ? "請注意：當所有權放棄後，無法再使用任何開關" : "Note: After you renounce the ownership, you'll never ever be able to control the contract",
+            style: controlWrapperStyle,
+            content:
+                [
+                    {
+                        title: language === "CN" ? "設置免稅白名單" : "Set Whitelist",
+                        style: controlBoxStyle2,
+                    },
+                    {
+                        title: language === "CN" ? "設置黑名單" : "Set Blacklist",
+                        style: controlBoxStyle2,
+                    },
+                    {
+                        title: language === "CN" ? "設置營銷錢包" : "Set Marketing Wallet",
+                        style: controlBoxStyle2,
+                    },
+                ]
         },
         {
-            title: language !== "CN" ? "Router Address" : "路由地址",
-            value: routerAddress,
-            textType: "text",
-            function: e => setRouterAddress(e.target.value),
-            style: styles2,
-            // placeholder: "1000000",
+            title: language === "CN" ? "分紅控制" : "Reflection",
+            titleStyle: titleStyle,
+            style: controlWrapperStyle,
+            content:
+                [
+                    {
+                        title: language === "CN" ? "設置分紅閥值" : "Set Reflection Threshold",
+                        style: controlBoxStyle2,
+                    },
+                    {
+                        title: language === "CN" ? "設置分紅稅率" : "Set Reflection Threshold",
+                        style: controlBoxStyle2,
+                    },
+                ]
+        },
+        {
+            title: language === "CN" ? "所有權" : "Ownership",
+            titleStyle: titleStyle,
+            alert: language === "CN" ? "請注意：當所有權放棄後，無法再使用任何開關" : "Note: After you renounce the ownership, you'll never ever be able to control the contract",
+            style: controlWrapperStyle,
+            content:
+                [
+                    {
+                        title: language === "CN" ? "放棄所有權" : "Renounce Ownership",
+                        style: controlBoxStyle2,
+                    },
+                    {
+                        title: language === "CN" ? "轉移所有權" : "Transfer Ownership",
+                        style: controlBoxStyle2,
+                    },
+                ]
         },
     ]
 
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const handleOptionSelect = (value) => {
-        setSelectedValue(value);
-        setIsOpen(false);
-    };
-
-    const dropDownStyle = {
-        position: "absolute",
-        top: "100%",
-        left: "0",
-        backgroundColor: "lightgray",
-        boxShadow: "0px 8px 16px 0px rgba(0,0,0,0.2)",
-        padding: "10px 0",
-        width: "100%",
-        borderRadius: "5px",
-        zIndex: "1",
-        display: "none",
-    }
     return (
         <div style={{
-            width: '100%',
+            width: '90%',
             color: 'black',
             position: 'absolute',
             height: '85vh',
@@ -222,96 +189,54 @@ const ControlPanel = () => {
         }}>
             <div style={{ textAlign: 'left', paddingTop: '15px' }}>
                 <h1>{texts.title}</h1><br />
+                <h5 style={{ color: 'gray' }}>{texts.giveUpAlert}</h5>
             </div>
-            <div>
-                <h5 style={{
-                    justifyContent: 'space-between',
+            <div className='controlWrapper' style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '75vh',
+                alignItems: 'center',
+                // maxWidth: '600px',
+                marginLeft: '-2vw',
+            }}>
+                <div style={{
                     display: 'flex',
-                    flexDirection: 'row',
-                    width: '90%'
+                    flexWrap: 'wrap',
+                    paddingTop: '10px',
+                    width: '90%',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                 }}>
-                    <div>
-                        {texts.module}
-                    </div>
-                    <div>
-                        {texts.description}
-                    </div>
-                </h5>
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <span
-                        onClick={toggleDropdown}
-                        style={{
-                            marginLeft: '5vw',
-                            backgroundColor: 'white',
-                            border: '1px solid black',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                            padding: '5px 10px',
-                            maxWidth: '250px',
-                            width: '100%',
-                            justifyContent: 'space-between',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            fontWeight: 'bold',
-                            alignItems: 'center',
-                        }}>
-                        <div>{selectedValue || texts.module}</div><div> ▼ </div>
-                    </span>
+                    {
+                        controls.map((control, index) => {
+                            return (
+                                <div key={index} style={control.style}>
+                                    <span style={control.titleStyle}>{control.title}</span>
+                                    <span style={{ paddingLeft: '20px', }}>{control.alert}</span>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        {
+                                            control.content !== undefined &&
+                                            control.content.map((content, indexed) => {
+                                                return (
+                                                    <div key={indexed} style={{
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                    }}>
+                                                        <div style={content.style}>
+                                                            <span>{content.title}</span>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
                 </div>
             </div>
-            {
-                isOpen && (
-                    <ul style={{ marginLeft: '5vw', zIndex: '1', position: 'absolute', backgroundColor: 'white', border: '1px solid black' }}>
-                        {
-                            moduleTypes.map((module, index) => {
-                                return (
-                                    <li
-                                        onClick={() => handleOptionSelect(`${module.MODULE}`)}
-                                        key={index}
-                                        style={{
-                                            padding: '5px 10px',
-                                            width: '250px',
-                                        }}
-                                    >{module.MODULE}</li>
-                                )
-                            })
-                        }
-                    </ul>
-                )
-            }
-            <br />
-
-            <div
-                className="createContractWrapper"
-                style={{
-                    marginRight: '10vw',
-                }}>
-
-                {
-                    datas.map((data, index) => {
-                        return (
-                            <div key={index} style={styles}>
-                                <h4>{data.title}</h4>
-                                <input
-                                    text={data.textType}
-                                    value={data.value}
-                                    onChange={data.function}
-                                    style={data.style}
-                                    placeholder={data.placeholder}
-                                />
-                            </div>
-                        )
-                    })
-                }
-            </div>
-
-            <button onClick={submitValue}
-                style={styles2 && { width: '80%' }}
-            >Submit Value</button>
-
-            <button onClick={deploy}
-                style={styles2 && { width: '80%' }}
-            >Deploy</button>
         </div>
     )
 }

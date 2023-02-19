@@ -38,7 +38,7 @@ const navigationConfig = [
     },
     {
         key: '一鍵發幣',
-		path: '/create',
+		path: '/createV1',
 		title: '一鍵發幣',
 		translateKey: 'Token Creator',
 		icon: 'tokenCreate',

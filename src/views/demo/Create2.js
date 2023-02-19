@@ -5,39 +5,15 @@ import swal from 'sweetalert';
 import { Dropdown } from 'components/ui'
 import DropdownItem from 'components/ui/Dropdown/DropdownItem';
 import { useSelector } from 'react-redux'
-// import { NORMAL_ABI, MARKETINGLP_Bep20Based_ABI } from './abi/contractABI'
+import contractABI from './abi/contractABI.json'
 import tokenABI from './abi/tokenABI.json'
 import { ethers } from 'ethers'
 import { moduleTypesEN, moduleTypesCN } from './CreateData';
-import { Market_LP_BNB_Module } from './bytecode/bytecode';
+import { NormalToken, Market_LP_1 } from './bytecode/bytecodeAll';
 
-const defaultRouter = "0x10ED43C718714eb63d5aA57B78B54704E256024E";
-const defaultReward = [
-    {
-        Contract: "0x55d398326f99059fF775485246999027B3197955",
-        Name: "USDT"
-    }
-]
 
-// const contractAddress = {
-//     Normal: '0x4C78b4e54149bDCDc767961F5910c609343063f8',
-//     MARKETINGLP_Bep20Based: '0xAFB4A1cD95CE79761BBE7Ee4b34297fF0899831a'
-// }
-
-const contractAddress = {
-    Normal: '0x8706B184D46d95Bee27FABAE45E0121B831a8718',
-    MARKETINGLP_Bep20Based: '0x8706B184D46d95Bee27FABAE45E0121B831a8718'
-}
-
-const defaultBase = {
-    BSC: {
-        BNB: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-        USDT: '0x55d398326f99059fF775485246999027B3197955',
-    },
-    BSCTest: {
-        USDT: '0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684'
-    }
-}
+const contractAddress = '0x06de5443c9C209C2288C930FD09F627c013aB9Ce'
+const defaultRouter = '0xD99D1c33F9fC3444f8101754aBC46c52416550D1'
 
 const Create = () => {
     let language = useLocale();
@@ -49,76 +25,11 @@ const Create = () => {
             MODULE: language === "CN" ? "請選擇合約模板" : "Choose Token Type"
         }
     ]
+
     const ERRORSTATE = {
         STATE_1: language === "CN" ? "代幣地址異常" : "Token Not Found",
         STATE_2: language === "CN" ? "並非合約地址" : "Not A Contract"
     }
-
-    const BaseOptions = {
-        OKC: [
-            {
-                name: "OKT",
-            },
-            {
-                name: "USDT",
-                contract: "0x382bB369d343125BfB2117af9c149795C6C65C50"
-            }
-        ],
-        BSC: [
-            {
-                name: "BNB",
-            },
-            {
-                name: "USDT",
-                contract: "0x55d398326f99059fF775485246999027B3197955"
-            }
-        ],
-        BSCTest: [
-            {
-                name: "BNB",
-            },
-            {
-                name: "USDT",
-                contract: "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684"
-            }
-        ]
-    }
-
-    const SwapOptions =
-    {
-        BSC: [
-            {
-                name: language === "CN" ? "薄餅" : "PancakeSwap",
-                contract: "0x10ED43C718714eb63d5aA57B78B54704E256024E"
-            },
-            {
-                name: language === "CN" ? "JSwap" : "JSwap",
-                contract: "0x069A306A638ac9d3a68a6BD8BE898774C073DCb3"
-            }
-        ],
-        BSCTest : [
-            {
-                name: language === "CN" ? "薄餅" : "PancakeSwap",
-                contract: "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"
-            },
-        ],
-        OKC : [
-            {
-                name: language === "CN" ? "JSwap" : "JSwap",
-                contract: "0x069A306A638ac9d3a68a6BD8BE898774C073DCb3"
-            }
-        ]
-    }
-    // const SwapOptions = [
-    //     {
-    //         name: language === "CN" ? "薄餅" : "PancakeSwap",
-    //         contract: "0x10ED43C718714eb63d5aA57B78B54704E256024E"
-    //     },
-    //     {
-    //         name: language === "CN" ? "JSwap" : "JSwap",
-    //         contract: "0x069A306A638ac9d3a68a6BD8BE898774C073DCb3"
-    //     }
-    // ]
 
     const DROPDOWN = {
         DROPDOWN_MODULE: "0",
@@ -150,14 +61,13 @@ const Create = () => {
     const [marketingFee, setMarketingFee] = useState(0);
     const [liquidityFee, setLiquidityFee] = useState(0);
     const [rewardFee, setRewardFee] = useState(0);
-    const [rewardToken, setRewardToken] = useState(defaultReward[0].Contract);
+    // const [rewardToken, setRewardToken] = useState(defaultReward[0].Contract);
     const [marketingWallet, setMarketingWallet] = useState('');
     const [lpBaseToken, setLpBaseToken] = useState('');
 
     const [provider, setProvider] = useState(null)
     const [signer, setSigner] = useState(null)
-    const [normalContract, setNormalContract] = useState(null)
-    const [MARKETINGLP_Bep20Contract, setMARKETINGLP_Bep20Contract] = useState(null)
+    const [contract, setContract] = useState(null)
     const [nameSymbol, setNameSymbol] = useState("USDT");
 
     const [isOpen, setIsOpen] = useState(false);
@@ -194,11 +104,8 @@ const Create = () => {
         let tempSigner = tempProvider.getSigner();
         setSigner(tempSigner);
 
-        let tempNormalContract = new ethers.Contract(contractAddress.Normal, NORMAL_ABI, tempSigner)
-        setNormalContract(tempNormalContract);
-
-        let tempMARKETINGLP_Bep20Contract = new ethers.Contract(contractAddress.MARKETINGLP_Bep20Based, MARKETINGLP_Bep20Based_ABI, tempSigner)
-        setMARKETINGLP_Bep20Contract(tempMARKETINGLP_Bep20Contract);
+        let tempContract = new ethers.Contract(contractAddress, contractABI, tempSigner)
+        setContract(tempContract);
     }
 
     const updateReward = async (value) => {
@@ -222,41 +129,41 @@ const Create = () => {
             ===================================
     */
 
-    useEffect(() => {
-        console.log("chainID : " + chainID)
-        if (chainID === chainOptions.bsc) {
-            setSelectedBaseValue(BaseOptions.BSC.name)
-            setBaseOptionsWithChain(BaseOptions.BSC)
-            setSelectedSwapValue(SwapOptions.BSC.name)
-            setSwapOptionsWithChain(SwapOptions.BSC)
-        }
-        if (chainID === chainOptions.bsctest) {
-            setSelectedBaseValue(BaseOptions.BSCTest.name)
-            setBaseOptionsWithChain(BaseOptions.BSCTest)
-            setSelectedSwapValue(SwapOptions.BSCTest.name)
-            setSwapOptionsWithChain(SwapOptions.BSCTest)
-        }
-        if (chainID === chainOptions.okc) {
-            setSelectedBaseValue(BaseOptions.OKC.name)
-            setBaseOptionsWithChain(BaseOptions.OKC)
-            setSelectedSwapValue(SwapOptions.OKC.name)
-            setSwapOptionsWithChain(SwapOptions.OKC)
-        }
-    }, [chainID])
+    // useEffect(() => {
+    //     console.log("chainID : " + chainID)
+    //     if (chainID === chainOptions.bsc) {
+    //         setSelectedBaseValue(BaseOptions.BSC.name)
+    //         setBaseOptionsWithChain(BaseOptions.BSC)
+    //         setSelectedSwapValue(SwapOptions.BSC.name)
+    //         setSwapOptionsWithChain(SwapOptions.BSC)
+    //     }
+    //     if (chainID === chainOptions.bsctest) {
+    //         setSelectedBaseValue(BaseOptions.BSCTest.name)
+    //         setBaseOptionsWithChain(BaseOptions.BSCTest)
+    //         setSelectedSwapValue(SwapOptions.BSCTest.name)
+    //         setSwapOptionsWithChain(SwapOptions.BSCTest)
+    //     }
+    //     if (chainID === chainOptions.okc) {
+    //         setSelectedBaseValue(BaseOptions.OKC.name)
+    //         setBaseOptionsWithChain(BaseOptions.OKC)
+    //         setSelectedSwapValue(SwapOptions.OKC.name)
+    //         setSwapOptionsWithChain(SwapOptions.OKC)
+    //     }
+    // }, [chainID])
 
-    useEffect(() => {
-        if (rewardToken === defaultReward[0].Contract) {
-            setNameSymbol("USDT")
-            return;
-        }
-        if (rewardToken.length === 42) {
-            updateReward(rewardToken)
-        }
-        if (rewardToken.length !== 42) {
-            if (nameSymbol !== ERRORSTATE.STATE_1)
-                setNameSymbol(ERRORSTATE.STATE_1)
-        }
-    }, [rewardToken])
+    // useEffect(() => {
+    //     if (rewardToken === defaultReward[0].Contract) {
+    //         setNameSymbol("USDT")
+    //         return;
+    //     }
+    //     if (rewardToken.length === 42) {
+    //         updateReward(rewardToken)
+    //     }
+    //     if (rewardToken.length !== 42) {
+    //         if (nameSymbol !== ERRORSTATE.STATE_1)
+    //             setNameSymbol(ERRORSTATE.STATE_1)
+    //     }
+    // }, [rewardToken])
 
     useEffect(() => {
         if (account !== null)
@@ -331,11 +238,14 @@ const Create = () => {
         /* 0稅普通模板*/
         if (value === 1)
             try {
-                let result = await normalContract.deploy(
-                    name,
-                    symbol,
+                let etherValue = ethers.utils.parseEther("0.05");
+                // console.log(etherValue);
+                let result = await contract.deployNormalContract(
+                    NormalToken,
+                    [name, symbol],
+                    totalSupply,
                     decimal,
-                    totalSupply
+                    { value: etherValue },
                 )
                 console.log(result)
             } catch (err) {
@@ -344,27 +254,43 @@ const Create = () => {
         /* 營銷回流模板 */
         if (value === 2) {
             /* 選定BNB 模板 */
-            if (selectedBaseValueIndex === 0) { }
+            if (selectedBaseValueIndex === 0) {
+                try {
+                    let result = await contract.deployContract(
+                        value,
+                        Market_LP_1,
+                        [defaultRouter, marketingWallet],
+                        [name, symbol],
+                        [marketingFee * 100, liquidityFee * 100],
+                        [marketingFee * 100, liquidityFee * 100],
+                        totalSupply,
+                        decimal,
+                    )
+                    console.log(result)
+                } catch (err) {
+                    console.log(err)
+                }
+            }
 
             /* 選定其他底池模板 */
             /* USDT模板 */
-            if (selectedBaseValueIndex === 1) { }
-            try {
-                let result = await MARKETINGLP_Bep20Contract.deploy(
-                    routerAddress,
-                    baseOptionsWithChain[selectedBaseValueIndex].contract,
-                    name,
-                    symbol,
-                    [marketingFee * 100, liquidityFee * 100],
-                    [marketingFee * 100, liquidityFee * 100],
-                    decimal,
-                    totalSupply,
-                    marketingWallet
-                )
-                console.log(result)
-            } catch (err) {
-                console.log(err)
-            }
+            // if (selectedBaseValueIndex === 1) { }
+            // try {
+            //     let result = await contract.deploy(
+            //         routerAddress,
+            //         baseOptionsWithChain[selectedBaseValueIndex].contract,
+            //         name,
+            //         symbol,
+            //         [marketingFee * 100, liquidityFee * 100],
+            //         [marketingFee * 100, liquidityFee * 100],
+            //         decimal,
+            //         totalSupply,
+            //         marketingWallet
+            //     )
+            //     console.log(result)
+            // } catch (err) {
+            //     console.log(err)
+            // }
         }
 
     }
@@ -437,7 +363,7 @@ const Create = () => {
             textType: "text",
             function: e => setSymbol(e.target.value),
             style: styles2,
-            placeholder: "Eth",
+            placeholder: "ETH",
         },
         {
             position: 2,
@@ -446,7 +372,7 @@ const Create = () => {
             textType: "number",
             function: e => setDecimal(e.target.value),
             style: styles2,
-            placeholder: "18",
+            placeholder: "0 ~ 18",
         },
         {
             position: 3,
@@ -502,24 +428,24 @@ const Create = () => {
             style: styles2,
             // placeholder: "1000000",
         },
-        {
-            position: 9,
-            title: language !== "CN" ? "Reflection Fee" : "分紅稅率",
-            value: rewardFee,
-            textType: "number",
-            function: e => setRewardFee(e.target.value),
-            style: styles2,
-            // placeholder: "1000000",
-        },
-        {
-            position: 10,
-            title: language !== "CN" ? "Reflection Token" : "分紅代幣",
-            value: rewardToken,
-            textType: "text",
-            function: e => setRewardToken(e.target.value),
-            style: styles2,
-            // placeholder: "1000000",
-        },
+        // {
+        //     position: 9,
+        //     title: language !== "CN" ? "Reflection Fee" : "分紅稅率",
+        //     value: rewardFee,
+        //     textType: "number",
+        //     function: e => setRewardFee(e.target.value),
+        //     style: styles2,
+        //     // placeholder: "1000000",
+        // },
+        // {
+        //     position: 10,
+        //     title: language !== "CN" ? "Reflection Token" : "分紅代幣",
+        //     value: rewardToken,
+        //     textType: "text",
+        //     function: e => setRewardToken(e.target.value),
+        //     style: styles2,
+        //     // placeholder: "1000000",
+        // },
     ]
 
     const toggleDropdown = (value) => {
@@ -537,12 +463,10 @@ const Create = () => {
         setIsOpen(false);
     };
     const handleBaseOptionSelect = (value) => {
-        setSelectedBaseValue(baseOptionsWithChain[value].name);
         setSelectedBaseValueIndex(value)
         setIsBaseOpen(false);
     };
     const handleSwapOptionSelect = (value) => {
-        setSelectedSwapValue(swapOptionsWithChain[value].name);
         setSelectedSwapValueIndex(value)
         setIsSwapOpen(false);
     };
@@ -598,7 +522,7 @@ const Create = () => {
                     </span>
                 </div>
             </div>
-            
+
             {/* --代幣模板選單-- */}
             {
                 isOpen && (
@@ -643,7 +567,7 @@ const Create = () => {
                         if (selectedValueIndex === 1)
                             if (index > 3) return;
                         if (selectedValueIndex === 2)
-                            if (index > 7) return;
+                            if (index > 9) return;
                         return (
                             <div key={index} style={styles}>
 
@@ -658,7 +582,7 @@ const Create = () => {
                                             style={data.style}
                                             onClick={() => toggleDropdown(DROPDOWN.DROPDOWN_BASE)}
                                         >
-                                            {selectedBaseValue || baseOptionsWithChain[0].name} <div> ▼ </div>
+                                            {selectedBaseValue} <div> ▼ </div>
                                         </div>
 
                                         {
@@ -698,7 +622,7 @@ const Create = () => {
                                             style={data.style}
                                             onClick={() => toggleDropdown(DROPDOWN.DROPDOWN_SWAP)}
                                         >
-                                            {selectedSwapValue || swapOptionsWithChain[0].name} <div> ▼ </div>
+                                            {selectedSwapValue} <div> ▼ </div>
                                         </div>
 
                                         {

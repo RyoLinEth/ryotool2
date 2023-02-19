@@ -4,7 +4,8 @@ import Body from './Body'
 const SingleMenuView = () => {
 	return (
 		<div>
-			<Body />
+			Under Construction
+			{/* <Body /> */}
 		</div>
 	)
 }

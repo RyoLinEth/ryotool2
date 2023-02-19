@@ -31,7 +31,8 @@ const initialState = {
 	panelExpand: themeConfig.panelExpand,
 	navMode: initialNavMode(),
 	layout: themeConfig.layout,
-	defaultAccount:  themeConfig.defaultAccount
+	defaultAccount:  themeConfig.defaultAccount,
+	chainID: themeConfig.chainID,
 }
 
 const availableNavColorLayouts = [
@@ -123,6 +124,9 @@ export const themeSlice = createSlice({
 		setPublicAddress: (state, action) => {
 			state.defaultAccount = action.payload
 		},
+		setChainID: (state, action) => {
+			state.chainID = action.payload
+		},
 	},
 })
 
@@ -138,6 +142,7 @@ export const {
 	setThemeColorLevel,
 	setPreviousLayout,
 	setPublicAddress,
+	setChainID,
 } = themeSlice.actions
 
 export default themeSlice.reducer

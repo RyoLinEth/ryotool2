@@ -5,39 +5,15 @@ import swal from 'sweetalert';
 import { Dropdown } from 'components/ui'
 import DropdownItem from 'components/ui/Dropdown/DropdownItem';
 import { useSelector } from 'react-redux'
-// import { NORMAL_ABI, MARKETINGLP_Bep20Based_ABI } from './abi/contractABI'
+import contractABI from './abi/contractABI.json'
 import tokenABI from './abi/tokenABI.json'
 import { ethers } from 'ethers'
 import { moduleTypesEN, moduleTypesCN } from './CreateData';
-import { Market_LP_BNB_Module } from './bytecode/bytecode';
+import { NormalToken, Market_LP_1 } from './bytecode/bytecodeAll';
 
-const defaultRouter = "0x10ED43C718714eb63d5aA57B78B54704E256024E";
-const defaultReward = [
-    {
-        Contract: "0x55d398326f99059fF775485246999027B3197955",
-        Name: "USDT"
-    }
-]
 
-// const contractAddress = {
-//     Normal: '0x4C78b4e54149bDCDc767961F5910c609343063f8',
-//     MARKETINGLP_Bep20Based: '0xAFB4A1cD95CE79761BBE7Ee4b34297fF0899831a'
-// }
-
-const contractAddress = {
-    Normal: '0x8706B184D46d95Bee27FABAE45E0121B831a8718',
-    MARKETINGLP_Bep20Based: '0x8706B184D46d95Bee27FABAE45E0121B831a8718'
-}
-
-const defaultBase = {
-    BSC: {
-        BNB: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-        USDT: '0x55d398326f99059fF775485246999027B3197955',
-    },
-    BSCTest: {
-        USDT: '0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684'
-    }
-}
+const contractAddress = '0x06de5443c9C209C2288C930FD09F627c013aB9Ce'
+const defaultRouter = '0xD99D1c33F9fC3444f8101754aBC46c52416550D1'
 
 const Create = () => {
     let language = useLocale();
@@ -46,79 +22,15 @@ const Create = () => {
 
     const initModuleType = [
         {
-            MODULE: language === "CN" ? "請選擇合約模板" : "Choose Token Type"
+            MODULE: language === "CN" ? "請選擇合約模板" : "Choose Token Template",
+            Description: ""
         }
     ]
+
     const ERRORSTATE = {
         STATE_1: language === "CN" ? "代幣地址異常" : "Token Not Found",
         STATE_2: language === "CN" ? "並非合約地址" : "Not A Contract"
     }
-
-    const BaseOptions = {
-        OKC: [
-            {
-                name: "OKT",
-            },
-            {
-                name: "USDT",
-                contract: "0x382bB369d343125BfB2117af9c149795C6C65C50"
-            }
-        ],
-        BSC: [
-            {
-                name: "BNB",
-            },
-            {
-                name: "USDT",
-                contract: "0x55d398326f99059fF775485246999027B3197955"
-            }
-        ],
-        BSCTest: [
-            {
-                name: "BNB",
-            },
-            {
-                name: "USDT",
-                contract: "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684"
-            }
-        ]
-    }
-
-    const SwapOptions =
-    {
-        BSC: [
-            {
-                name: language === "CN" ? "薄餅" : "PancakeSwap",
-                contract: "0x10ED43C718714eb63d5aA57B78B54704E256024E"
-            },
-            {
-                name: language === "CN" ? "JSwap" : "JSwap",
-                contract: "0x069A306A638ac9d3a68a6BD8BE898774C073DCb3"
-            }
-        ],
-        BSCTest : [
-            {
-                name: language === "CN" ? "薄餅" : "PancakeSwap",
-                contract: "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"
-            },
-        ],
-        OKC : [
-            {
-                name: language === "CN" ? "JSwap" : "JSwap",
-                contract: "0x069A306A638ac9d3a68a6BD8BE898774C073DCb3"
-            }
-        ]
-    }
-    // const SwapOptions = [
-    //     {
-    //         name: language === "CN" ? "薄餅" : "PancakeSwap",
-    //         contract: "0x10ED43C718714eb63d5aA57B78B54704E256024E"
-    //     },
-    //     {
-    //         name: language === "CN" ? "JSwap" : "JSwap",
-    //         contract: "0x069A306A638ac9d3a68a6BD8BE898774C073DCb3"
-    //     }
-    // ]
 
     const DROPDOWN = {
         DROPDOWN_MODULE: "0",
@@ -132,6 +44,89 @@ const Create = () => {
         bsctest: '0x61'
     }
 
+    const SwapOptions = {
+        BSC: [
+            {
+                Name: "PancakeSwap",
+                Contract: "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+            },
+            {
+                Name: "BabySwap",
+                Contract: "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"
+            },
+            {
+                Name: "JSwap",
+                Contract: "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"
+            }
+        ],
+        BSCTest: [
+            {
+                Name: "PancakeSwap",
+                Contract: "0xD99D1c33F9fC3444f8101754aBC46c52416550D1"
+            },
+            {
+                Name: "BabySwap",
+                Contract: "0x10ED43C718714eb63d5aA57B78B54704E256024E"
+            },
+        ],
+        OKC: [
+            {
+                Name: "JSwap",
+            }
+        ]
+    };
+
+    const BaseOptions = {
+        BSC: [
+            //如果是BNB作為底池 直接使用一般合約
+            {
+                Name: "BNB",
+
+            },
+            //如果是其他代幣 則使用 以BEP20為底的合約
+            {
+                Name: "USDT",
+                Contract: "0x55d398326f99059fF775485246999027B3197955"
+
+            },
+            {
+                Name: "BUSD",
+                Contract: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+            }
+        ],
+        BSCTest: [
+            //如果是BNB作為底池 直接使用一般合約
+            {
+                Name: "BNB",
+
+            },
+            //如果是其他代幣 則使用 以BEP20為底的合約
+            {
+                Name: "USDT",
+                Contract: "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684"
+
+            },
+            {
+                Name: "BUSD",
+                Contract: "0xaB1a4d4f1D656d2450692D237fdD6C7f9146e814"
+            }
+        ],
+        OKC: [
+            {
+                Name: "OKT",
+            },
+            {
+                Name: "USDT",
+                Contract: "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684"
+
+            },
+            {
+                Name: "BUSD",
+                Contract: "0xaB1a4d4f1D656d2450692D237fdD6C7f9146e814"
+            }
+        ]
+    };
+
     /*
             ===================================
             ===================================
@@ -141,7 +136,6 @@ const Create = () => {
             ===================================
             ===================================
     */
-    const [moduleTypes, setModuleTypes] = useState(initModuleType)
     const [name, setName] = useState('');
     const [symbol, setSymbol] = useState('');
     const [decimal, setDecimal] = useState('');
@@ -150,23 +144,33 @@ const Create = () => {
     const [marketingFee, setMarketingFee] = useState(0);
     const [liquidityFee, setLiquidityFee] = useState(0);
     const [rewardFee, setRewardFee] = useState(0);
-    const [rewardToken, setRewardToken] = useState(defaultReward[0].Contract);
+
+    // const [rewardToken, setRewardToken] = useState(defaultReward[0].Contract);
     const [marketingWallet, setMarketingWallet] = useState('');
     const [lpBaseToken, setLpBaseToken] = useState('');
 
     const [provider, setProvider] = useState(null)
     const [signer, setSigner] = useState(null)
-    const [normalContract, setNormalContract] = useState(null)
-    const [MARKETINGLP_Bep20Contract, setMARKETINGLP_Bep20Contract] = useState(null)
+    const [contract, setContract] = useState(null)
     const [nameSymbol, setNameSymbol] = useState("USDT");
 
     const [isOpen, setIsOpen] = useState(false);
     const [isBaseOpen, setIsBaseOpen] = useState(false);
     const [isSwapOpen, setIsSwapOpen] = useState(false);
+
+    //選擇中文 還是英文模板
+    const [moduleTypes, setModuleTypes] = useState(initModuleType)
+
+    //選擇模板中的哪個模板 0稅 / 營銷回流 / 分紅
     const [selectedValue, setSelectedValue] = useState(moduleTypes[0].MODULE);
+
+    //選擇模板代表的數字 0稅 - 1 / 營銷回流 - 2 / 分紅 - 3
     const [selectedValueIndex, setSelectedValueIndex] = useState(0);
 
+    //偵測到在哪個鍊以後
+    //傳入底池選項
     const [baseOptionsWithChain, setBaseOptionsWithChain] = useState([]);
+    //傳入Swap選項
     const [swapOptionsWithChain, setSwapOptionsWithChain] = useState([]);
 
     const [selectedBaseValue, setSelectedBaseValue] = useState('');
@@ -194,11 +198,8 @@ const Create = () => {
         let tempSigner = tempProvider.getSigner();
         setSigner(tempSigner);
 
-        let tempNormalContract = new ethers.Contract(contractAddress.Normal, NORMAL_ABI, tempSigner)
-        setNormalContract(tempNormalContract);
-
-        let tempMARKETINGLP_Bep20Contract = new ethers.Contract(contractAddress.MARKETINGLP_Bep20Based, MARKETINGLP_Bep20Based_ABI, tempSigner)
-        setMARKETINGLP_Bep20Contract(tempMARKETINGLP_Bep20Contract);
+        let tempContract = new ethers.Contract(contractAddress, contractABI, tempSigner)
+        setContract(tempContract);
     }
 
     const updateReward = async (value) => {
@@ -223,56 +224,48 @@ const Create = () => {
     */
 
     useEffect(() => {
-        console.log("chainID : " + chainID)
+        //偵測到 鍊 改變時，改變底池 以及 Router的選項
+
         if (chainID === chainOptions.bsc) {
-            setSelectedBaseValue(BaseOptions.BSC.name)
-            setBaseOptionsWithChain(BaseOptions.BSC)
-            setSelectedSwapValue(SwapOptions.BSC.name)
+            //更改Router選項
             setSwapOptionsWithChain(SwapOptions.BSC)
+            setSelectedSwapValue(SwapOptions.BSC[0].Name)
+
+            //更改底池選項
+            setBaseOptionsWithChain(BaseOptions.BSC)
+            setSelectedBaseValue(BaseOptions.BSC[0].Name)
         }
         if (chainID === chainOptions.bsctest) {
-            setSelectedBaseValue(BaseOptions.BSCTest.name)
-            setBaseOptionsWithChain(BaseOptions.BSCTest)
-            setSelectedSwapValue(SwapOptions.BSCTest.name)
             setSwapOptionsWithChain(SwapOptions.BSCTest)
+            setSelectedSwapValue(SwapOptions.BSCTest[0].Name)
+
+            setBaseOptionsWithChain(BaseOptions.BSCTest)
+            setSelectedBaseValue(BaseOptions.BSCTest[0].Name)
         }
         if (chainID === chainOptions.okc) {
-            setSelectedBaseValue(BaseOptions.OKC.name)
-            setBaseOptionsWithChain(BaseOptions.OKC)
-            setSelectedSwapValue(SwapOptions.OKC.name)
             setSwapOptionsWithChain(SwapOptions.OKC)
+            setSelectedSwapValue(SwapOptions.OKC[0].Name)
+
+            setBaseOptionsWithChain(BaseOptions.OKC)
+            setSelectedBaseValue(BaseOptions.OKC[0].Name)
         }
     }, [chainID])
-
-    useEffect(() => {
-        if (rewardToken === defaultReward[0].Contract) {
-            setNameSymbol("USDT")
-            return;
-        }
-        if (rewardToken.length === 42) {
-            updateReward(rewardToken)
-        }
-        if (rewardToken.length !== 42) {
-            if (nameSymbol !== ERRORSTATE.STATE_1)
-                setNameSymbol(ERRORSTATE.STATE_1)
-        }
-    }, [rewardToken])
 
     useEffect(() => {
         if (account !== null)
             updateEthers()
     }, [account, chainID])
 
+
+    /*  更換語言時 模板更換 */
     useEffect(() => {
         if (language === "CN") {
             setModuleTypes(moduleTypesCN)
             setSelectedValue(moduleTypesCN[selectedValueIndex].MODULE);
-            // setSelectedSwapValue(swapOptionsWithChain[selectedSwapValueIndex].name)
             return;
         }
         setModuleTypes(moduleTypesEN)
         setSelectedValue(moduleTypesEN[selectedValueIndex].MODULE);
-        // setSelectedSwapValue(swapOptionsWithChain[selectedSwapValueIndex].name)
         return;
     }, [language])
 
@@ -331,11 +324,14 @@ const Create = () => {
         /* 0稅普通模板*/
         if (value === 1)
             try {
-                let result = await normalContract.deploy(
-                    name,
-                    symbol,
+                let etherValue = ethers.utils.parseEther("0.05");
+                // console.log(etherValue);
+                let result = await contract.deployNormalContract(
+                    NormalToken,
+                    [name, symbol],
+                    totalSupply,
                     decimal,
-                    totalSupply
+                    { value: etherValue },
                 )
                 console.log(result)
             } catch (err) {
@@ -344,27 +340,44 @@ const Create = () => {
         /* 營銷回流模板 */
         if (value === 2) {
             /* 選定BNB 模板 */
-            if (selectedBaseValueIndex === 0) { }
+            if (selectedBaseValueIndex === 0) {
+                console.log(routerAddress)
+                try {
+                    let result = await contract.deployContract(
+                        value,
+                        Market_LP_1,
+                        [routerAddress, marketingWallet],
+                        [name, symbol],
+                        [marketingFee * 100, liquidityFee * 100],
+                        [marketingFee * 100, liquidityFee * 100],
+                        totalSupply,
+                        decimal,
+                    )
+                    console.log(result)
+                } catch (err) {
+                    console.log(err)
+                }
+            }
 
             /* 選定其他底池模板 */
             /* USDT模板 */
-            if (selectedBaseValueIndex === 1) { }
-            try {
-                let result = await MARKETINGLP_Bep20Contract.deploy(
-                    routerAddress,
-                    baseOptionsWithChain[selectedBaseValueIndex].contract,
-                    name,
-                    symbol,
-                    [marketingFee * 100, liquidityFee * 100],
-                    [marketingFee * 100, liquidityFee * 100],
-                    decimal,
-                    totalSupply,
-                    marketingWallet
-                )
-                console.log(result)
-            } catch (err) {
-                console.log(err)
-            }
+            if (selectedBaseValueIndex !== 0) { console.log(lpBaseToken) }
+            // try {
+            //     let result = await contract.deploy(
+            //         routerAddress,
+            //         baseOptionsWithChain[selectedBaseValueIndex].contract,
+            //         name,
+            //         symbol,
+            //         [marketingFee * 100, liquidityFee * 100],
+            //         [marketingFee * 100, liquidityFee * 100],
+            //         decimal,
+            //         totalSupply,
+            //         marketingWallet
+            //     )
+            //     console.log(result)
+            // } catch (err) {
+            //     console.log(err)
+            // }
         }
 
     }
@@ -373,7 +386,7 @@ const Create = () => {
         e.preventDefault();
         if (selectedValueIndex === 0) {
             if (language !== "CN") {
-                swal("Error", `Please Choose The Token Type You Want To Deploy`, "error")
+                swal("Error", `Please Choose The Token Template You Want To Deploy`, "error")
                 return;
             }
             swal("錯誤", `請選擇代幣類型`, "error")
@@ -414,11 +427,15 @@ const Create = () => {
         deploy(selectedValueIndex)
     }
 
+
+
     const texts = {
         title: language !== "CN" ? "Token Creator" : "一鍵發幣",
-        module: language !== "CN" ? "Token Type" : "請選擇合約模板",
+        module: language !== "CN" ? "Token Template" : "請選擇合約模板",
         description: language !== "CN" ? "Token Description" : "代幣說明",
     }
+
+
 
     const datas = [
         {
@@ -437,7 +454,7 @@ const Create = () => {
             textType: "text",
             function: e => setSymbol(e.target.value),
             style: styles2,
-            placeholder: "Eth",
+            placeholder: "ETH",
         },
         {
             position: 2,
@@ -446,7 +463,7 @@ const Create = () => {
             textType: "number",
             function: e => setDecimal(e.target.value),
             style: styles2,
-            placeholder: "18",
+            placeholder: "0 ~ 18",
         },
         {
             position: 3,
@@ -459,19 +476,19 @@ const Create = () => {
         },
         {
             position: 4,
-            title: language !== "CN" ? "Router Address" : "底池",
+            title: language !== "CN" ? "Base Currency" : "底池幣種",
             value: lpBaseToken,
             textType: "text",
-            function: e => setLpBaseToken(e.target.value),
+            // function: e => setLpBaseToken(e.target.value),
             style: styles3,
             // placeholder: "1000000",
         },
         {
             position: 5,
-            title: language !== "CN" ? "Router Address" : "路由地址",
+            title: language !== "CN" ? "DEX" : "去中心化交易所",
             value: routerAddress,
             textType: "text",
-            function: e => setRouterAddress(e.target.value),
+            // function: e => setRouterAddress(e.target.value),
             style: styles3,
             // placeholder: "1000000",
         },
@@ -502,24 +519,24 @@ const Create = () => {
             style: styles2,
             // placeholder: "1000000",
         },
-        {
-            position: 9,
-            title: language !== "CN" ? "Reflection Fee" : "分紅稅率",
-            value: rewardFee,
-            textType: "number",
-            function: e => setRewardFee(e.target.value),
-            style: styles2,
-            // placeholder: "1000000",
-        },
-        {
-            position: 10,
-            title: language !== "CN" ? "Reflection Token" : "分紅代幣",
-            value: rewardToken,
-            textType: "text",
-            function: e => setRewardToken(e.target.value),
-            style: styles2,
-            // placeholder: "1000000",
-        },
+        // {
+        //     position: 9,
+        //     title: language !== "CN" ? "Reflection Fee" : "分紅稅率",
+        //     value: rewardFee,
+        //     textType: "number",
+        //     function: e => setRewardFee(e.target.value),
+        //     style: styles2,
+        //     // placeholder: "1000000",
+        // },
+        // {
+        //     position: 10,
+        //     title: language !== "CN" ? "Reflection Token" : "分紅代幣",
+        //     value: rewardToken,
+        //     textType: "text",
+        //     function: e => setRewardToken(e.target.value),
+        //     style: styles2,
+        //     // placeholder: "1000000",
+        // },
     ]
 
     const toggleDropdown = (value) => {
@@ -537,17 +554,29 @@ const Create = () => {
         setIsOpen(false);
     };
     const handleBaseOptionSelect = (value) => {
-        setSelectedBaseValue(baseOptionsWithChain[value].name);
+        //設定前端 底池 的名字
+        setSelectedBaseValue(baseOptionsWithChain[value].Name)
+        //設定 底池 所相對應的數字
         setSelectedBaseValueIndex(value)
+        //設定 底池 合約
+        if (value !== 0) setLpBaseToken(baseOptionsWithChain[value].Contract)
         setIsBaseOpen(false);
     };
+
     const handleSwapOptionSelect = (value) => {
-        setSelectedSwapValue(swapOptionsWithChain[value].name);
+        //設定前端 Swap 的名字
+        setSelectedSwapValue(swapOptionsWithChain[value].Name)
+        //設定 Swap 所相對應的數字
         setSelectedSwapValueIndex(value)
+        //設定 Swap 合約
+        setRouterAddress(swapOptionsWithChain[value].Contract)
         setIsSwapOpen(false);
     };
 
     return (
+
+        //  一鍵發幣 頁面
+
         <div style={{
             width: '92%',
             color: 'black',
@@ -572,11 +601,8 @@ const Create = () => {
                     <div>
                         {texts.module}
                     </div>
-                    <div>
-                        {texts.description}
-                    </div>
                 </h5>
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span
                         onClick={() => toggleDropdown(DROPDOWN.DROPDOWN_MODULE)}
                         style={{
@@ -593,18 +619,19 @@ const Create = () => {
                             flexDirection: 'row',
                             fontWeight: 'bold',
                             alignItems: 'center',
+                            position: 'relative',
+                            zIndex: '1',
                         }}>
                         <div>{selectedValue || texts.module}</div><div> ▼ </div>
                     </span>
                 </div>
             </div>
-            
+
             {/* --代幣模板選單-- */}
             {
                 isOpen && (
                     <ul style={{ marginLeft: '5vw', zIndex: '1', position: 'absolute', backgroundColor: 'white', border: '1px solid black' }}>
                         {
-
                             moduleTypes.map((module, index) => {
                                 if (index !== 0)
                                     return (
@@ -618,14 +645,19 @@ const Create = () => {
                                                 width: '220px',
                                                 cursor: 'pointer',
                                             }}
-                                        >{module.MODULE}</li>
+                                        >{module.MODULE}
+                                        </li>
                                     )
                             })
                         }
                     </ul>
                 )
             }
-            <br />
+            <p style={{
+                marginLeft: '7vw',
+                color: 'gray',
+                width: '70%',
+            }}>{moduleTypes[selectedValueIndex].Description}</p><br />
 
             {/* --一鍵發幣參數-- */}
             <div
@@ -643,10 +675,9 @@ const Create = () => {
                         if (selectedValueIndex === 1)
                             if (index > 3) return;
                         if (selectedValueIndex === 2)
-                            if (index > 7) return;
+                            if (index > 9) return;
                         return (
                             <div key={index} style={styles}>
-
                                 {/* 設置底池 */}
                                 {
                                     index === 4 &&
@@ -658,7 +689,7 @@ const Create = () => {
                                             style={data.style}
                                             onClick={() => toggleDropdown(DROPDOWN.DROPDOWN_BASE)}
                                         >
-                                            {selectedBaseValue || baseOptionsWithChain[0].name} <div> ▼ </div>
+                                            {selectedBaseValue} <div> ▼ </div>
                                         </div>
 
                                         {
@@ -676,7 +707,7 @@ const Create = () => {
                                                                         padding: '5px 10px',
                                                                         width: '220px',
                                                                     }}
-                                                                >{base.name}</li>
+                                                                >{base.Name}</li>
                                                             )
                                                         })
                                                     }
@@ -698,14 +729,14 @@ const Create = () => {
                                             style={data.style}
                                             onClick={() => toggleDropdown(DROPDOWN.DROPDOWN_SWAP)}
                                         >
-                                            {selectedSwapValue || swapOptionsWithChain[0].name} <div> ▼ </div>
+                                            {selectedSwapValue} <div> ▼ </div>
                                         </div>
 
                                         {
                                             isSwapOpen && (
                                                 <ul style={{ zIndex: '1', position: 'absolute', backgroundColor: 'white', border: '1px solid black' }}>
                                                     {
-                                                        swapOptionsWithChain.map((base, index) => {
+                                                        swapOptionsWithChain.map((swap, index) => {
                                                             return (
                                                                 <li
                                                                     onClick={() => {
@@ -716,7 +747,7 @@ const Create = () => {
                                                                         padding: '5px 10px',
                                                                         width: '220px',
                                                                     }}
-                                                                >{base.name}</li>
+                                                                >{swap.Name}</li>
                                                             )
                                                         })
                                                     }
@@ -748,22 +779,6 @@ const Create = () => {
                                         />
                                     </div>
                                 }
-                                {/* <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '90%', alignItems: 'center' }}>
-                                    <h4>{data.title}</h4>
-                                    {
-                                        index === 9 &&
-                                        <span style={{ textAlign: 'right' }}>
-                                            {nameSymbol}
-                                        </span>
-                                    }
-                                </div>
-                                <input
-                                    text={data.textType}
-                                    value={data.value}
-                                    onChange={data.function}
-                                    style={data.style}
-                                    placeholder={data.placeholder}
-                                /> */}
                             </div>
                         )
                     })

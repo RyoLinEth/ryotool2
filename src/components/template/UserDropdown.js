@@ -8,11 +8,13 @@ import classNames from 'classnames'
 import { HiOutlineUser, HiOutlineLogout } from 'react-icons/hi'
 import useLocale from 'utils/hooks/useLocale'
 import { useDispatch } from 'react-redux';
-import { setPublicAddress } from 'store/theme/themeSlice'
+import { setPublicAddress, setChainID } from 'store/theme/themeSlice'
 
-const okcNetWorkID = '0x42'
-const bscNetWorkID = '0x38'
-const bsctestNetWorkID = '0x61'
+const network = {
+	okc : '0x42',
+	bsc : '0x38',
+	bsctest : '0x61'
+}
 
 export const UserDropdown = ({ className }) => {
 	let language = useLocale();
@@ -49,12 +51,23 @@ export const UserDropdown = ({ className }) => {
 			return;
 		}
 		setConnectButtonText("Connect Wallet")
-	}, [defaultAccount, language])
+	}, [defaultAccount])
 
+	useEffect(()=> {
+		changingChain();
+	}, [net])
+	
 	async function changingAccount() {
 		if (window.ethereum) {
 			window.ethereum.on('accountsChanged', () => {
 				connectWalletHandler()
+			})
+		}
+	}
+	async function changingChain() {
+		if (window.ethereum) {
+			window.ethereum.on('chainChanged', () => {
+				checkCorrectNetwork();
 			})
 		}
 	}
@@ -76,19 +89,23 @@ export const UserDropdown = ({ className }) => {
 		let chainId = await ethereum.request({ method: 'eth_chainId' })
 		console.log('Connected to chain:' + chainId)
 
-		if (chainId === okcNetWorkID) {
+		if (chainId === network.okc) {
 			setNet("OKC")
+			dispatch(setChainID(network.okc))
 			return;
 		}
-		if (chainId === bscNetWorkID) {
+		if (chainId === network.bsc) {
 			setNet("BSC")
+			dispatch(setChainID(network.bsc))
 			return;
 		}
-		if (chainId === bsctestNetWorkID) {
-			setNet("BSC Test")
+		if (chainId === network.bsctest) {
+			setNet("BSC Testnet")
+			dispatch(setChainID(network.bsctest))
 			return;
 		}
 		setNet(language === "CN" ? "未知網路" : "Unknown")
+		dispatch(setChainID("Unknown"))
 	}
 
 	const accountChangeHandler = async (newAccount) => {
@@ -126,25 +143,21 @@ export const UserDropdown = ({ className }) => {
 				</Dropdown.Item>
 				<Dropdown.Item variant="divider" />
 				{dropdownItemList.map(item => (
-					<Dropdown.Item eventKey={item.label} key={item.label} className="mb-1">
+					<Dropdown.Item eventKey={item.label} key={item.label} style={{width : '100%'}} className="mb-1">
 						{
 							item.path === undefined &&
-							<a className="flex gap-2 items-center" href={item.to}>
+							<a className="flex gap-2 items-center" style={{width : '100%'}} href={item.to}>
 								<span className="text-xl opacity-50">{item.icon}</span>
 								<span>{item.label}</span>
 							</a>
 						}
 						{
 							item.path !== undefined &&
-							<Link className="flex gap-2 items-center" to={item.path}>
+							<Link className="flex gap-2 items-center" style={{width : '100%'}} to={item.path}>
 								<span className="text-xl opacity-50">{item.icon}</span>
 								<span>{item.label}</span>
 							</Link>
 						}
-						{/* <a className="flex gap-2 items-center" to={item.path}>
-							<span className="text-xl opacity-50">{item.icon}</span>
-							<span>{item.label}</span>
-						</a> */}
 					</Dropdown.Item>
 				))}
 			</Dropdown>

@@ -43,8 +43,8 @@ export const protectedRoutes = [
    
     {
         key: 'create',
-        path: '/create',
-        component: React.lazy(() => import('views/demo/Create')),
+        path: '/createV1',
+        component: React.lazy(() => import('views/demo/Create3')),
         authority: [],
     },
     {
